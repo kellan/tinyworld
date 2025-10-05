@@ -34,10 +34,62 @@ renderer.setSize(window.innerWidth, window.innerHeight)
 renderer.setPixelRatio(window.devicePixelRatio)
 container.appendChild(renderer.domElement)
 
-// Light
-const light = new THREE.DirectionalLight(0xffffff, 1)
-light.position.set(2, 4, 3)
-scene.add(light, new THREE.AmbientLight(0xffffff, 0.3))
+// Lighting system with multiple presets
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1)
+directionalLight.position.set(2, 4, 3)
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.3)
+scene.add(directionalLight, ambientLight)
+
+// Lighting presets for experimentation
+const lightingPresets = [
+  {
+    name: 'Cool Neutral (Original)',
+    directionalColor: 0xffffff,
+    directionalIntensity: 1,
+    ambientColor: 0xffffff,
+    ambientIntensity: 0.3,
+    background: 0x222222
+  },
+  {
+    name: 'Warm Cozy',
+    directionalColor: 0xfff4e6,  // Warm white
+    directionalIntensity: 1.2,
+    ambientColor: 0xffeedd,      // Warm ambient
+    ambientIntensity: 0.45,
+    background: 0xfff8f0          // Warm cream background
+  },
+  {
+    name: 'Soft Daylight',
+    directionalColor: 0xffffee,  // Slightly warm
+    directionalIntensity: 1.1,
+    ambientColor: 0xe8f4ff,      // Cool ambient (sky bounce)
+    ambientIntensity: 0.5,
+    background: 0xb8d4e8          // Soft sky blue
+  },
+  {
+    name: 'Golden Hour',
+    directionalColor: 0xffd9a0,  // Orange-ish sunlight
+    directionalIntensity: 1.3,
+    ambientColor: 0xffead0,      // Warm peachy ambient
+    ambientIntensity: 0.4,
+    background: 0xffeac5          // Golden cream
+  }
+]
+
+let currentPresetIndex = 1  // Start with Warm Cozy
+
+function applyLightingPreset(index: number) {
+  const preset = lightingPresets[index]
+  directionalLight.color.setHex(preset.directionalColor)
+  directionalLight.intensity = preset.directionalIntensity
+  ambientLight.color.setHex(preset.ambientColor)
+  ambientLight.intensity = preset.ambientIntensity
+  scene.background = new THREE.Color(preset.background)
+  console.log(`Lighting: ${preset.name}`)
+}
+
+// Apply initial preset
+applyLightingPreset(currentPresetIndex)
 
 // Ground plane
 const groundGeometry = new THREE.PlaneGeometry(10, 10)
@@ -153,6 +205,11 @@ window.addEventListener('keydown', (e) => {
       gridHelper.visible = !gridHelper.visible
       xAxis.visible = gridHelper.visible
       zAxis.visible = gridHelper.visible
+      break
+    case 'l':
+      // Cycle through lighting presets
+      currentPresetIndex = (currentPresetIndex + 1) % lightingPresets.length
+      applyLightingPreset(currentPresetIndex)
       break
   }
 })

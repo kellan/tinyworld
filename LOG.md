@@ -486,3 +486,39 @@
 **Time**: ~15 minutes
 
 **Next**: Phase 4.1 - GLTFLoader Setup
+
+---
+
+### Lighting Experimentation (Bonus Polish)
+
+**Goal**: Create cozy diorama aesthetic with warmer, softer lighting
+
+**Actions Taken**:
+1. Created 4 lighting presets for experimentation
+   - Cool Neutral (original): white lights, dark gray background
+   - Warm Cozy: cream-toned lights, warm background, softer shadows (0.45 ambient)
+   - Soft Daylight: warm sun + cool ambient (sky bounce), sky blue background
+   - Golden Hour: orange sunlight, peachy ambient, golden background
+2. Added L key to cycle through presets
+3. Set "Warm Cozy" as default for better diorama feel
+4. Console logs preset name on change
+
+**Learnings**:
+- Color temperature dramatically affects mood (warm = cozy, cool = clinical)
+- Ambient intensity controls shadow softness (0.3 = harsh, 0.5 = very soft)
+- Background color is crucial for diorama feel (dark gray felt too "void-like")
+- Real-time preset switching enables rapid aesthetic iteration
+- Slightly warm directional (0xfff4e6) + warm ambient (0xffeedd) creates inviting feel
+
+**Decisions**:
+- Kept all 4 presets for flexibility during development
+- Started with Warm Cozy (preset index 1) as most "diorama-like"
+- Used L key (L for Lighting) for easy testing
+- Increased directional intensity slightly (1.2) to compensate for brighter backgrounds
+- Chose cream/warm backgrounds over pure white (less eye strain)
+
+**Test Results**: ✅ All tests passing (26 tests - lighting tests still valid)
+
+**Time**: ~15 minutes
+
+**Next**: Phase 4.1 - GLTFLoader Setup
