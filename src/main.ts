@@ -79,7 +79,9 @@ const keys = {
   left: false,
   right: false,
   up: false,
-  down: false
+  down: false,
+  zoomIn: false,
+  zoomOut: false
 }
 
 // Keyboard event listeners
@@ -100,6 +102,15 @@ window.addEventListener('keydown', (e) => {
     case 's':
     case 'arrowdown':
       keys.down = true
+      break
+    case 'q':
+    case '-':
+      keys.zoomOut = true
+      break
+    case 'e':
+    case '=':
+    case '+':
+      keys.zoomIn = true
       break
   }
 })
@@ -122,12 +133,45 @@ window.addEventListener('keyup', (e) => {
     case 'arrowdown':
       keys.down = false
       break
+    case 'q':
+    case '-':
+      keys.zoomOut = false
+      break
+    case 'e':
+    case '=':
+    case '+':
+      keys.zoomIn = false
+      break
   }
 })
 
-// Camera pan function
+// Camera pan and zoom variables
 const panSpeed = 0.1
 const lookAtTarget = new THREE.Vector3(0, 0, 0)
+let currentFrustumSize = frustumSize
+const minZoom = 2
+const maxZoom = 20
+const zoomSpeed = 0.05
+
+// Trackpad/mouse wheel zoom
+window.addEventListener('wheel', (e) => {
+  e.preventDefault()
+
+  // Zoom based on deltaY (works for both mouse wheel and trackpad)
+  const zoomDelta = e.deltaY > 0 ? (1 + zoomSpeed * 2) : (1 - zoomSpeed * 2)
+  currentFrustumSize *= zoomDelta
+
+  // Clamp to min/max
+  currentFrustumSize = Math.max(minZoom, Math.min(maxZoom, currentFrustumSize))
+
+  // Update camera frustum
+  const aspect = window.innerWidth / window.innerHeight
+  camera.left = -currentFrustumSize * aspect / 2
+  camera.right = currentFrustumSize * aspect / 2
+  camera.top = currentFrustumSize / 2
+  camera.bottom = -currentFrustumSize / 2
+  camera.updateProjectionMatrix()
+}, { passive: false })
 
 function updateCameraControls() {
   const panDelta = new THREE.Vector3()
@@ -140,21 +184,53 @@ function updateCameraControls() {
     // Pan right in isometric space (+X, -Z direction)
     panDelta.add(new THREE.Vector3(1, 0, -1).normalize().multiplyScalar(panSpeed))
   }
+  if (keys.up) {
+    // Pan up in isometric space (-X, -Z direction)
+    panDelta.add(new THREE.Vector3(-1, 0, -1).normalize().multiplyScalar(panSpeed))
+  }
+  if (keys.down) {
+    // Pan down in isometric space (+X, +Z direction)
+    panDelta.add(new THREE.Vector3(1, 0, 1).normalize().multiplyScalar(panSpeed))
+  }
 
   if (panDelta.lengthSq() > 0) {
     camera.position.add(panDelta)
     lookAtTarget.add(panDelta)
     camera.lookAt(lookAtTarget)
   }
+
+  // Handle zoom
+  let zoomChanged = false
+  if (keys.zoomIn) {
+    currentFrustumSize *= (1 - zoomSpeed)
+    zoomChanged = true
+  }
+  if (keys.zoomOut) {
+    currentFrustumSize *= (1 + zoomSpeed)
+    zoomChanged = true
+  }
+
+  if (zoomChanged) {
+    // Clamp to min/max
+    currentFrustumSize = Math.max(minZoom, Math.min(maxZoom, currentFrustumSize))
+
+    // Update camera frustum
+    const aspect = window.innerWidth / window.innerHeight
+    camera.left = -currentFrustumSize * aspect / 2
+    camera.right = currentFrustumSize * aspect / 2
+    camera.top = currentFrustumSize / 2
+    camera.bottom = -currentFrustumSize / 2
+    camera.updateProjectionMatrix()
+  }
 }
 
 // Resize
 window.addEventListener('resize', () => {
     const aspect = window.innerWidth / window.innerHeight
-    camera.left = -frustumSize * aspect / 2
-    camera.right = frustumSize * aspect / 2
-    camera.top = frustumSize / 2
-    camera.bottom = -frustumSize / 2
+    camera.left = -currentFrustumSize * aspect / 2
+    camera.right = currentFrustumSize * aspect / 2
+    camera.top = currentFrustumSize / 2
+    camera.bottom = -currentFrustumSize / 2
     camera.updateProjectionMatrix()
     renderer.setSize(window.innerWidth, window.innerHeight)
 })

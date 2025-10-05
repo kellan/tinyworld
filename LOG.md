@@ -255,3 +255,82 @@
 **Time**: ~25 minutes
 
 **Next**: Phase 2.2 - Pan Controls - Vertical
+
+---
+
+### Phase 2.2: Pan Controls - Vertical ✅ (Completed)
+
+**Goal**: Add vertical panning (W/S keys) to complete full 2D camera movement
+
+**Actions Taken**:
+1. Added vertical panning tests to `test/controls.test.ts`
+   - Test pan up in isometric space (-X, -Z diagonal)
+   - Test pan down in isometric space (+X, +Z diagonal)
+   - Test diagonal panning (combining horizontal + vertical input)
+2. Extended `updateCameraControls()` in `src/main.ts`
+   - Added up/down panning logic using W/S and up/down arrows
+   - Up = (-X, -Z) direction, Down = (+X, +Z) direction
+   - Panning vectors automatically combine for diagonal movement
+
+**Learnings**:
+- Isometric "up" and "down" are also diagonal in world space
+- Up = both X and Z decrease, Down = both X and Z increase
+- Multiple key inputs naturally combine into diagonal movement
+- The normalized vectors automatically handle diagonal speed consistency
+
+**Decisions**:
+- Reused same panSpeed (0.1) for vertical as horizontal
+- Same key binding pattern: both WASD and arrow keys supported
+- Letting vectors add naturally rather than special-casing diagonals
+
+**Test Results**: ✅ All tests passing (15 tests total)
+
+**Time**: ~20 minutes
+
+**Next**: Phase 2.3 - Zoom Controls
+
+---
+
+### Phase 2.3: Zoom Controls ✅ (Completed)
+
+**Goal**: Implement zoom in/out via keyboard and trackpad/mouse wheel
+
+**Actions Taken**:
+1. Added zoom tests to `test/controls.test.ts`
+   - Test zoom in (decreasing frustum size)
+   - Test zoom out (increasing frustum size)
+   - Test min/max zoom clamping
+   - Test aspect ratio maintained during zoom
+2. Extended keyboard controls for zoom
+   - Q or - to zoom out
+   - E or + to zoom in
+   - Added zoomIn/zoomOut to keys state
+3. Implemented zoom logic in `updateCameraControls()`
+   - Multiplies frustumSize by zoom factor
+   - Clamps between minZoom (2) and maxZoom (20)
+   - Updates camera frustum and projection matrix
+4. Added trackpad/mouse wheel zoom support
+   - Listens to wheel events for smooth scrolling zoom
+   - Works with two-finger trackpad swipe and mouse wheel
+   - Uses same zoom speed and clamping as keyboard
+5. Updated resize handler to use `currentFrustumSize`
+
+**Learnings**:
+- Orthographic zoom = adjusting frustum size (smaller = zoomed in, larger = zoomed out)
+- Must update all 4 frustum bounds (left, right, top, bottom) and call updateProjectionMatrix()
+- Wheel event works for both mouse wheel and trackpad gestures
+- preventDefault() needed to avoid page scrolling during zoom
+- Aspect ratio automatically maintained by using same calculation as initial setup
+
+**Decisions**:
+- Skipped mouse wheel initially for mobile compatibility, added keyboard zoom
+- Added trackpad support per user request (wheel event works well)
+- Zoom range: 2 (very close) to 20 (far away) - can adjust later
+- Zoom speed: 0.05 for keyboard, 0.1 for wheel (2x faster for smooth scrolling)
+- Using Q/E keys (common in games) plus -/+ for intuitive zoom
+
+**Test Results**: ✅ All tests passing (19 tests total)
+
+**Time**: ~25 minutes
+
+**Next**: Phase 2.4 - Camera Bounds
