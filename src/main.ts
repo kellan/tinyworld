@@ -175,68 +175,49 @@ const animalTexture = textureLoader.load('/models/Nature_Texture.png')
 animalTexture.flipY = false // GLTF textures don't flip Y
 animalTexture.colorSpace = THREE.SRGBColorSpace
 
-loadModel('/models/bumblebee.glb', (gltf) => {
-  // Position bumblebee hovering above ground (bees fly!)
-  gltf.scene.position.set(-2, 1.5, 0)
-  // Scale up 50x - model is extremely small (1cm originally)
-  gltf.scene.scale.set(50, 50, 50)
+/**
+ * Load an animal from the Low Poly Animals pack with texture and animation
+ * @param url - Path to the GLB file
+ * @param position - THREE.Vector3 position in the scene
+ * @param scale - Uniform scale factor (animals need 50-200x typically)
+ */
+function loadAnimal(url: string, position: THREE.Vector3, scale: number) {
+  loadModel(url, (gltf) => {
+    // Position
+    gltf.scene.position.copy(position)
 
-  // Apply the proper texture to all meshes
-  const materialWithTexture = new THREE.MeshStandardMaterial({
-    map: animalTexture,
-    roughness: 0.8,
-    metalness: 0.1
-  })
+    // Scale
+    gltf.scene.scale.set(scale, scale, scale)
 
-  gltf.scene.traverse((child) => {
-    if (child instanceof THREE.Mesh) {
-      child.material = materialWithTexture
+    // Apply shared texture
+    const materialWithTexture = new THREE.MeshStandardMaterial({
+      map: animalTexture,
+      roughness: 0.8,
+      metalness: 0.1
+    })
+
+    gltf.scene.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.material = materialWithTexture
+      }
+    })
+
+    // Set up animation
+    if (gltf.animations && gltf.animations.length > 0) {
+      const mixer = new THREE.AnimationMixer(gltf.scene)
+      mixers.push(mixer)
+
+      const action = mixer.clipAction(gltf.animations[0])
+      action.play()
+
+      console.log(`${url} animation playing:`, gltf.animations[0].name)
     }
   })
+}
 
-  // Set up animation
-  if (gltf.animations && gltf.animations.length > 0) {
-    const mixer = new THREE.AnimationMixer(gltf.scene)
-    mixers.push(mixer)
-
-    // Play the first animation (wing flapping, flying motion, etc.)
-    const action = mixer.clipAction(gltf.animations[0])
-    action.play()
-
-    console.log('Bumblebee animation playing:', gltf.animations[0].name)
-  }
-})
-
-loadModel('/models/frog.glb', (gltf) => {
-  // Position frog on the ground (frogs sit!)
-  gltf.scene.position.set(1, 0, -1)
-  // Scale up 150x - frog is even tinier than bumblebee!
-  gltf.scene.scale.set(150, 150, 150)
-
-  // Apply the shared animal texture
-  const materialWithTexture = new THREE.MeshStandardMaterial({
-    map: animalTexture,
-    roughness: 0.8,
-    metalness: 0.1
-  })
-
-  gltf.scene.traverse((child) => {
-    if (child instanceof THREE.Mesh) {
-      child.material = materialWithTexture
-    }
-  })
-
-  // Set up animation
-  if (gltf.animations && gltf.animations.length > 0) {
-    const mixer = new THREE.AnimationMixer(gltf.scene)
-    mixers.push(mixer)
-
-    const action = mixer.clipAction(gltf.animations[0])
-    action.play()
-
-    console.log('Frog animation playing:', gltf.animations[0].name)
-  }
-})
+// Load animals using the utility function
+loadAnimal('/models/bumblebee.glb', new THREE.Vector3(-2, 1.5, 0), 50)
+loadAnimal('/models/frog.glb', new THREE.Vector3(1, 0, -1), 150)
 
 // Grid helper
 const gridHelper = new THREE.GridHelper(20, 20, 0x444444, 0x888888)

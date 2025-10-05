@@ -744,3 +744,45 @@
 **Time**: ~5 minutes
 
 **Next**: Phase 4.3 - Model Management
+
+---
+
+### Phase 4.3: Model Management ✅ (Completed)
+
+**Goal**: Create utility functions for easy model positioning and scaling
+
+**Actions Taken**:
+1. Created `loadAnimal()` utility function
+   - Takes URL, position (Vector3), and scale (number)
+   - Automatically applies shared texture atlas
+   - Sets up animation if present
+   - Adds to mixers array for animation updates
+   - Encapsulates all common animal-loading logic
+2. Refactored bumblebee and frog to use utility
+   - Reduced from ~100 lines of duplicated code to 2 clean lines
+   - `loadAnimal('/models/bumblebee.glb', new THREE.Vector3(-2, 1.5, 0), 50)`
+   - `loadAnimal('/models/frog.glb', new THREE.Vector3(1, 0, -1), 150)`
+3. Added tests for model positioning and scaling
+   - Test positioning models at specific coordinates
+   - Test uniform scaling
+   - Test combined position + scale operations
+
+**Learnings**:
+- Utility functions dramatically reduce code duplication
+- Passing Vector3 for position is cleaner than individual x/y/z params
+- Single scale number works well for uniform scaling (animals should keep proportions)
+- TypeScript function signatures with proper types improve clarity
+- Encapsulating common patterns makes adding new models trivial
+
+**Decisions**:
+- Used THREE.Vector3 for position parameter (type-safe, clear intent)
+- Single scale number instead of Vector3 (animals always uniformly scaled)
+- Auto-play animations (can make optional in future if needed)
+- Console log animation name for debugging
+- Keep separate `loadModel()` for non-animal models (duck stays as-is)
+
+**Test Results**: ✅ All tests passing (32 tests total - 3 new model management tests)
+
+**Time**: ~15 minutes
+
+**Next**: Phase 5.1 - EffectComposer Setup
