@@ -158,12 +158,38 @@ box4.position.set(1, 0.25, -2)
 
 scene.add(box1, box2, box3, box4)
 
-// Load GLTF model
+// Load GLTF models
 loadModel('/models/duck.glb', (gltf) => {
   // Position the duck on the ground at (-1, 0, -1)
   gltf.scene.position.set(-1, 0, -1)
   // Duck model is already a good size at scale 1
   gltf.scene.scale.set(1, 1, 1)
+})
+
+// Load texture for low poly animals
+const textureLoader = new THREE.TextureLoader()
+const animalTexture = textureLoader.load('/models/Nature_Texture.png')
+animalTexture.flipY = false // GLTF textures don't flip Y
+animalTexture.colorSpace = THREE.SRGBColorSpace
+
+loadModel('/models/bumblebee.glb', (gltf) => {
+  // Position bumblebee hovering above ground (bees fly!)
+  gltf.scene.position.set(-2, 1.5, 0)
+  // Scale up 50x - model is extremely small (1cm originally)
+  gltf.scene.scale.set(50, 50, 50)
+
+  // Apply the proper texture to all meshes
+  const materialWithTexture = new THREE.MeshStandardMaterial({
+    map: animalTexture,
+    roughness: 0.8,
+    metalness: 0.1
+  })
+
+  gltf.scene.traverse((child) => {
+    if (child instanceof THREE.Mesh) {
+      child.material = materialWithTexture
+    }
+  })
 })
 
 // Grid helper

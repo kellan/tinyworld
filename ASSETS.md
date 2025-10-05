@@ -118,6 +118,91 @@ mv *.gltf ../../../public/models/
 
 ---
 
+## ✅ WORKING: Animated Low Poly Animals Setup
+
+### What We Learned
+
+**The animals use a shared texture atlas!**
+- All animals share **ONE texture file**: `Nature_Texture.png` (21KB)
+- Each animal has UV coordinates pointing to different regions of this texture
+- This is why the bumblebee shows yellow/black stripes even though we just applied a generic material
+
+**Texture Atlas Technique**:
+- Single image contains colors for ALL 9 animals
+- Very efficient (one texture in memory vs 9 separate ones)
+- Common in Unity/game development for performance
+- Each model's UV map "knows" which part of the texture to use
+
+### Confirmed Working Conversion Process
+
+1. **Convert FBX to GLB** (binary format):
+   ```bash
+   cd "Animated_Low_Poly/Animated Low Poly Animals/Meshes"
+   /opt/homebrew/lib/node_modules/fbx2gltf/bin/Darwin/FBX2glTF Character_BumbleBee.fbx --binary
+   ```
+
+2. **Move files to public**:
+   ```bash
+   mv Character_BumbleBee.glb ../../../public/models/bumblebee.glb
+   ```
+
+3. **Copy the shared texture** (only need to do this once):
+   ```bash
+   cp "../Textures/Nature_Texture.png" ../../../public/models/
+   ```
+
+### Loading Animals in Code
+
+**Important**: These models are TINY (1-2 cm). Need to scale 50x minimum!
+
+```typescript
+// Load the shared texture ONCE (outside model loading)
+const textureLoader = new THREE.TextureLoader()
+const animalTexture = textureLoader.load('/models/Nature_Texture.png')
+animalTexture.flipY = false // GLTF textures don't flip Y
+animalTexture.colorSpace = THREE.SRGBColorSpace
+
+// Load bumblebee
+loadModel('/models/bumblebee.glb', (gltf) => {
+  gltf.scene.position.set(-2, 1.5, 0)
+  gltf.scene.scale.set(50, 50, 50)  // CRITICAL: Models are 1cm tall!
+
+  // Apply the shared texture to all meshes
+  const materialWithTexture = new THREE.MeshStandardMaterial({
+    map: animalTexture,
+    roughness: 0.8,
+    metalness: 0.1
+  })
+
+  gltf.scene.traverse((child) => {
+    if (child instanceof THREE.Mesh) {
+      child.material = materialWithTexture
+    }
+  })
+})
+```
+
+### Scale Reference (tested with bumblebee)
+- **Original size**: 0.011 units tall (~1 centimeter)
+- **Good scale**: 50x (makes it ~0.5 units tall)
+- **Adjust per animal** - fish might need different scale than butterfly
+
+### Gotchas & Solutions
+
+❌ **Problem**: Loading GLTF (text format) fails with "Invalid typed array length"
+✅ **Solution**: Use `--binary` flag to create GLB instead
+
+❌ **Problem**: Model loads but is invisible
+✅ **Solution**: Models are microscopic! Scale up 50-100x
+
+❌ **Problem**: Model is grey/untextured
+✅ **Solution**: Apply `Nature_Texture.png` with proper settings (flipY = false)
+
+❌ **Problem**: Texture looks wrong/stretched
+✅ **Solution**: Set `colorSpace = THREE.SRGBColorSpace` on texture
+
+---
+
 ## Using Converted Models
 
 Once you have GLB files in `public/models/`:

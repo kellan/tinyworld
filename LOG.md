@@ -605,3 +605,69 @@
 **Time**: ~30 minutes
 
 **Next**: Phase 4.3 - Model Management
+
+---
+
+### Animated Low Poly Animals Integration (Bonus Discovery)
+
+**Goal**: Convert and load FBX animal models from asset pack
+
+**Actions Taken**:
+1. Discovered FBX animal models in `Animated_Low_Poly/` directory
+   - 9 animals: Frog, Fish, BumbleBee, Butterfly, Turtle, Skipper, Firefly, Bird, Finch
+   - Includes animations, textures, and Unity materials
+2. Tested fbx2gltf conversion tool
+   - Found working command: `/opt/homebrew/lib/node_modules/fbx2gltf/bin/Darwin/FBX2glTF`
+   - Initially tried GLTF format - failed with "Invalid typed array length" error
+   - Switched to GLB (binary) with `--binary` flag - SUCCESS
+3. Converted Character_BumbleBee.fbx to bumblebee.glb
+   - File size: 195KB (includes animations)
+   - Conversion warnings about transform inheritance (acceptable)
+4. Discovered shared texture atlas system
+   - Found `Nature_Texture.png` in Textures folder
+   - ALL animals share one 21KB texture file
+   - Each model has UV coordinates pointing to different texture regions
+5. Loaded bumblebee into scene
+   - Initial problem: Model invisible (too small at scale 1)
+   - Discovered models are ~1cm tall (0.011 units)
+   - Solution: Scale 50x to make visible
+6. Applied proper texturing
+   - Initially grey because texture wasn't applied
+   - Loaded Nature_Texture.png with TextureLoader
+   - Critical settings: `flipY = false`, `colorSpace = SRGBColorSpace`
+   - Traversed model to apply material to all meshes
+   - Result: Proper yellow/black bee stripes visible!
+7. Positioned bumblebee hovering at (-2, 1.5, 0)
+8. Updated ASSETS.md with complete documentation
+
+**Learnings**:
+- FBX to GLB conversion requires `--binary` flag for single-file output
+- GLTF (text) format had issues, GLB (binary) works perfectly
+- Texture atlas technique: one image for all animals, very efficient
+- UV mapping allows different models to use different regions of same texture
+- These models are Unity-scaled (centimeters), need massive scale-up (50x)
+- GLTF textures don't flip Y (unlike some other formats)
+- Need to set proper color space (SRGB) for textures
+- Models include animations (1 animation per model)
+- Can reuse same texture/material for all animals from this pack
+
+**Decisions**:
+- Convert to GLB instead of GLTF for reliability
+- Store shared texture once in public/models/
+- Scale all animals 50x as baseline (adjust per animal as needed)
+- Create reusable material with shared texture
+- Use traverse() to apply material to all mesh children
+- Position bee hovering in air (height 1.5) since bees fly
+
+**Challenges**:
+- Initial GLTF conversion failed - learned GLB is more reliable
+- Model invisible at first - learned to check bounding box size
+- Grey model - discovered need for shared texture file
+- Had to experiment with texture settings (flipY, colorSpace)
+- Bumblebee overlapped with red box initially - moved position
+
+**Test Results**: ✅ All tests passing (29 tests - no new tests for animals yet)
+
+**Time**: ~45 minutes (exploration, conversion, debugging, documentation)
+
+**Next**: Phase 4.3 - Model Management (or convert more animals!)
