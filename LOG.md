@@ -671,3 +671,41 @@
 **Time**: ~45 minutes (exploration, conversion, debugging, documentation)
 
 **Next**: Phase 4.3 - Model Management (or convert more animals!)
+
+---
+
+### Animation System Setup (Bonus Feature)
+
+**Goal**: Enable animations for loaded GLTF models
+
+**Actions Taken**:
+1. Created global `mixers` array to track all AnimationMixers
+2. Set up AnimationMixer for bumblebee in model load callback
+   - Check if model has animations
+   - Create mixer for the model
+   - Get first animation clip and create action
+   - Play the action (starts animation)
+3. Added THREE.Clock for delta time calculation
+4. Updated render loop to update all mixers every frame
+   - Call `mixer.update(delta)` for smooth time-based animation
+   - Delta time ensures consistent animation speed regardless of frame rate
+
+**Learnings**:
+- AnimationMixer controls animation playback for a model
+- AnimationAction represents a specific animation clip being played
+- Must update mixer every frame with delta time for animations to play
+- Clock.getDelta() provides time since last frame for smooth animation
+- Can store multiple mixers in array to animate many models
+- Animations are baked into GLTF/GLB files during conversion
+
+**Decisions**:
+- Use array of mixers to support multiple animated models
+- Auto-play first animation when model loads (can make configurable later)
+- Use delta time for frame-rate independent animation
+- Log animation name to console for debugging
+
+**Test Results**: ✅ All tests passing (29 tests - no animation tests yet)
+
+**Time**: ~10 minutes
+
+**Next**: Phase 4.3 - Model Management

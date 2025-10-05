@@ -166,6 +166,9 @@ loadModel('/models/duck.glb', (gltf) => {
   gltf.scene.scale.set(1, 1, 1)
 })
 
+// Animation mixers array
+const mixers: THREE.AnimationMixer[] = []
+
 // Load texture for low poly animals
 const textureLoader = new THREE.TextureLoader()
 const animalTexture = textureLoader.load('/models/Nature_Texture.png')
@@ -190,6 +193,18 @@ loadModel('/models/bumblebee.glb', (gltf) => {
       child.material = materialWithTexture
     }
   })
+
+  // Set up animation
+  if (gltf.animations && gltf.animations.length > 0) {
+    const mixer = new THREE.AnimationMixer(gltf.scene)
+    mixers.push(mixer)
+
+    // Play the first animation (wing flapping, flying motion, etc.)
+    const action = mixer.clipAction(gltf.animations[0])
+    action.play()
+
+    console.log('Bumblebee animation playing:', gltf.animations[0].name)
+  }
 })
 
 // Grid helper
@@ -548,9 +563,19 @@ window.addEventListener('resize', () => {
     renderer.setSize(window.innerWidth, window.innerHeight)
 })
 
+// Clock for animation timing
+const clock = new THREE.Clock()
+
 // Render loop
 function animate() {
     requestAnimationFrame(animate)
+
+    // Get delta time for smooth animations
+    const delta = clock.getDelta()
+
+    // Update all animation mixers
+    mixers.forEach(mixer => mixer.update(delta))
+
     updateCameraControls()
     renderer.render(scene, camera)
 }
