@@ -74,6 +74,80 @@ box4.position.set(1, 0.25, -2)
 
 scene.add(box1, box2, box3, box4)
 
+// Camera controls state
+const keys = {
+  left: false,
+  right: false,
+  up: false,
+  down: false
+}
+
+// Keyboard event listeners
+window.addEventListener('keydown', (e) => {
+  switch(e.key.toLowerCase()) {
+    case 'a':
+    case 'arrowleft':
+      keys.left = true
+      break
+    case 'd':
+    case 'arrowright':
+      keys.right = true
+      break
+    case 'w':
+    case 'arrowup':
+      keys.up = true
+      break
+    case 's':
+    case 'arrowdown':
+      keys.down = true
+      break
+  }
+})
+
+window.addEventListener('keyup', (e) => {
+  switch(e.key.toLowerCase()) {
+    case 'a':
+    case 'arrowleft':
+      keys.left = false
+      break
+    case 'd':
+    case 'arrowright':
+      keys.right = false
+      break
+    case 'w':
+    case 'arrowup':
+      keys.up = false
+      break
+    case 's':
+    case 'arrowdown':
+      keys.down = false
+      break
+  }
+})
+
+// Camera pan function
+const panSpeed = 0.1
+const lookAtTarget = new THREE.Vector3(0, 0, 0)
+
+function updateCameraControls() {
+  const panDelta = new THREE.Vector3()
+
+  if (keys.left) {
+    // Pan left in isometric space (-X, +Z direction)
+    panDelta.add(new THREE.Vector3(-1, 0, 1).normalize().multiplyScalar(panSpeed))
+  }
+  if (keys.right) {
+    // Pan right in isometric space (+X, -Z direction)
+    panDelta.add(new THREE.Vector3(1, 0, -1).normalize().multiplyScalar(panSpeed))
+  }
+
+  if (panDelta.lengthSq() > 0) {
+    camera.position.add(panDelta)
+    lookAtTarget.add(panDelta)
+    camera.lookAt(lookAtTarget)
+  }
+}
+
 // Resize
 window.addEventListener('resize', () => {
     const aspect = window.innerWidth / window.innerHeight
@@ -88,6 +162,7 @@ window.addEventListener('resize', () => {
 // Render loop
 function animate() {
     requestAnimationFrame(animate)
+    updateCameraControls()
     renderer.render(scene, camera)
 }
 animate()

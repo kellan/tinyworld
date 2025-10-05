@@ -213,3 +213,45 @@
 **Time**: ~10 minutes (mostly verification)
 
 **Next**: Phase 2.1 - Pan Controls - Horizontal
+
+---
+
+### Phase 2.1: Pan Controls - Horizontal ✅ (Completed)
+
+**Goal**: Implement keyboard controls for horizontal camera panning (left/right)
+
+**Actions Taken**:
+1. Created `test/controls.test.ts` with panning tests
+   - Test pan left in isometric space (-X, +Z diagonal)
+   - Test pan right in isometric space (+X, -Z diagonal)
+   - Test that camera-to-lookAt offset is maintained during pan
+2. Implemented keyboard input system in `src/main.ts`
+   - Created keys state object to track pressed keys
+   - Added keydown/keyup event listeners for A/D and arrow keys
+   - Support both WASD and arrow keys
+3. Implemented `updateCameraControls()` function
+   - Calculates pan delta based on pressed keys
+   - Pans in isometric-aligned directions (diagonals in world space)
+   - Updates both camera position and lookAt target together
+   - Maintains viewing angle by moving camera and target in sync
+4. Integrated into render loop
+   - Called `updateCameraControls()` every frame for smooth movement
+
+**Learnings**:
+- In isometric view, "left" and "right" are diagonal directions in world space
+- Left = (-X, +Z) normalized, Right = (+X, -Z) normalized
+- Must update both camera.position AND lookAt target to maintain view angle
+- Using state object for keys allows smooth movement (not just single key presses)
+- panSpeed = 0.1 gives good responsive feel without being too fast
+
+**Decisions**:
+- Support both WASD and arrow keys for flexibility
+- Pan speed of 0.1 units per frame (can adjust later)
+- Move camera AND lookAt together (not just rotate camera)
+- Store lookAtTarget as variable since we modify it each frame
+
+**Test Results**: ✅ All tests passing (12 tests total)
+
+**Time**: ~25 minutes
+
+**Next**: Phase 2.2 - Pan Controls - Vertical
