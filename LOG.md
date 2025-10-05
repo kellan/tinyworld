@@ -559,3 +559,49 @@
 **Time**: ~20 minutes
 
 **Next**: Phase 4.2 - Load First GLTF
+
+---
+
+### Phase 4.2: Load First GLTF ✅ (Completed)
+
+**Goal**: Load an actual GLTF model into the scene
+
+**Actions Taken**:
+1. Created `public/models/` directory for assets
+2. Downloaded duck.glb from Khronos GLTF Sample Models repository
+   - Official sample model (118KB)
+   - Well-tested, guaranteed to work
+3. Added tests for model loading structure
+   - Test that loader accepts callbacks
+   - Test that loaded model can be added to scene
+4. Called `loadModel('/models/duck.glb')` in main.ts
+   - Used onLoad callback to position at (-1, 0, -1)
+   - Set scale to 1.0 (model is already good size)
+5. Debugged visibility issues
+   - Initially tried scale 0.01 (too small to see)
+   - Changed to scale 1.0 - duck became visible
+   - Model loads successfully and renders in scene
+
+**Learnings**:
+- GLTF models come in various scales - need to experiment
+- The duck model's native scale is appropriate at 1.0
+- Vite serves files from `public/` directory at root URL
+- GLTF loading is async - model appears after scene starts rendering
+- Models include their own materials and textures
+- The Khronos sample models are excellent for testing
+
+**Decisions**:
+- Used official Khronos sample model for reliability
+- Positioned duck at (-1, 0, -1) next to colored boxes
+- Kept scale at 1.0 for good visibility
+- Removed debug console logs after confirming it works
+
+**Challenges**:
+- Initial scale of 0.01 made duck invisible
+- Learned importance of trying different scales when model not visible
+
+**Test Results**: ✅ All tests passing (29 tests total)
+
+**Time**: ~30 minutes
+
+**Next**: Phase 4.3 - Model Management

@@ -158,6 +158,14 @@ box4.position.set(1, 0.25, -2)
 
 scene.add(box1, box2, box3, box4)
 
+// Load GLTF model
+loadModel('/models/duck.glb', (gltf) => {
+  // Position the duck on the ground at (-1, 0, -1)
+  gltf.scene.position.set(-1, 0, -1)
+  // Duck model is already a good size at scale 1
+  gltf.scene.scale.set(1, 1, 1)
+})
+
 // Grid helper
 const gridHelper = new THREE.GridHelper(20, 20, 0x444444, 0x888888)
 gridHelper.position.y = 0.01 // Slightly above ground to prevent z-fighting
