@@ -410,3 +410,44 @@
 **Time**: ~15 minutes
 
 **Next**: Phase 3.2 - Grid Helper
+
+---
+
+### Phase 3.2: Grid Helper ✅ (Completed)
+
+**Goal**: Add visual grid overlay to help visualize space and alignment
+
+**Actions Taken**:
+1. Added test for GridHelper in `test/scene.test.ts`
+   - Verifies GridHelper can be created and added to scene
+2. Created GridHelper in `src/main.ts`
+   - 20x20 unit grid with 20 divisions (1 unit per square)
+   - Colors: center lines 0x444444, grid lines 0x888888
+   - Positioned slightly above ground (y=0.01) to prevent z-fighting
+3. Added white axis lines for X and Z axes
+   - Bright white (0xffffff) lines overlaid on grid
+   - Makes center axes clearly visible
+   - Toggled together with grid
+4. Implemented G key toggle
+   - Press G to show/hide grid and axis lines
+   - Useful to reduce visual clutter when not needed
+
+**Learnings**:
+- GridHelper takes (size, divisions, centerLineColor, gridColor)
+- Must position slightly above ground to prevent z-fighting with plane
+- GridHelper doesn't support variable line widths
+- Can add separate Line objects for custom axis highlighting
+- LineBasicMaterial linewidth parameter has limited browser support
+
+**Decisions**:
+- Grid size 20x20 matches our camera bounds (50 units)
+- 1 unit per grid square for easy measurement
+- White axis lines for maximum visibility
+- G key for grid toggle (G for Grid)
+- Toggle hides both grid and axis lines together
+
+**Test Results**: ✅ All tests passing (23 tests total)
+
+**Time**: ~15 minutes
+
+**Next**: Phase 3.4 - Basic Lighting (3.3 already done in 1.2a)

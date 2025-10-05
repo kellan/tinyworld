@@ -1,7 +1,7 @@
 // ABOUTME: Tests for scene objects and world setup
 // ABOUTME: Verifies ground plane and object positioning for isometric world
 import { describe, it, expect } from 'vitest'
-import { Scene, Mesh, PlaneGeometry, BoxGeometry } from 'three'
+import { Scene, Mesh, PlaneGeometry, BoxGeometry, GridHelper } from 'three'
 import { setupThreeJsEnvironment } from './helpers/three-test-setup'
 
 setupThreeJsEnvironment()
@@ -41,5 +41,17 @@ describe('Scene Setup', () => {
     expect(box1.position.y).toBe(0.5)  // Half the height to sit on ground
     expect(box2.position.y).toBe(1)    // Half of 2-unit height
     expect(box3.position.y).toBe(0.5)
+  })
+
+  it('should have a grid helper', () => {
+    const scene = new Scene()
+    const gridSize = 20
+    const divisions = 20
+
+    const gridHelper = new GridHelper(gridSize, divisions)
+    scene.add(gridHelper)
+
+    expect(scene.children).toContain(gridHelper)
+    expect(gridHelper.type).toBe('GridHelper')
   })
 })

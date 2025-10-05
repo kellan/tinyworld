@@ -74,6 +74,30 @@ box4.position.set(1, 0.25, -2)
 
 scene.add(box1, box2, box3, box4)
 
+// Grid helper
+const gridHelper = new THREE.GridHelper(20, 20, 0x444444, 0x888888)
+gridHelper.position.y = 0.01 // Slightly above ground to prevent z-fighting
+scene.add(gridHelper)
+
+// Add white axis lines for X and Z
+const axisLineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 })
+
+// X axis (red traditionally, but white as requested)
+const xAxisGeometry = new THREE.BufferGeometry().setFromPoints([
+  new THREE.Vector3(-10, 0.02, 0),
+  new THREE.Vector3(10, 0.02, 0)
+])
+const xAxis = new THREE.Line(xAxisGeometry, axisLineMaterial)
+scene.add(xAxis)
+
+// Z axis (blue traditionally, but white as requested)
+const zAxisGeometry = new THREE.BufferGeometry().setFromPoints([
+  new THREE.Vector3(0, 0.02, -10),
+  new THREE.Vector3(0, 0.02, 10)
+])
+const zAxis = new THREE.Line(zAxisGeometry, axisLineMaterial)
+scene.add(zAxis)
+
 // Camera controls state
 const keys = {
   left: false,
@@ -123,6 +147,12 @@ window.addEventListener('keydown', (e) => {
       break
     case ']':
       keys.rotateRight = true
+      break
+    case 'g':
+      // Toggle grid and axis visibility
+      gridHelper.visible = !gridHelper.visible
+      xAxis.visible = gridHelper.visible
+      zAxis.visible = gridHelper.visible
       break
   }
 })
