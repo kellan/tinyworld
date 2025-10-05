@@ -522,3 +522,40 @@
 **Time**: ~15 minutes
 
 **Next**: Phase 4.1 - GLTFLoader Setup
+
+---
+
+### Phase 4.1: GLTFLoader Setup ✅ (Completed)
+
+**Goal**: Set up GLTF model loading infrastructure
+
+**Actions Taken**:
+1. Created `test/gltf-loader.test.ts` with GLTFLoader instantiation test
+   - Verifies loader can be instantiated
+   - Checks load() and parse() methods exist
+2. Imported GLTFLoader from 'three/examples/jsm/loaders/GLTFLoader.js'
+   - No additional installation needed (already included in Three.js)
+3. Created `loadModel()` utility function in `src/main.ts`
+   - Takes url, onLoad, onProgress, and onError callbacks
+   - Automatically adds loaded model to scene
+   - Console logs success/errors for debugging
+   - Simple API for loading models in next phases
+
+**Learnings**:
+- GLTFLoader is included in Three.js examples/jsm, no extra package needed
+- GLTF is the standard format for 3D models on the web
+- Loader API is callback-based (async)
+- Need to add gltf.scene to our scene (not just gltf)
+- Loading is asynchronous, so need error handling
+
+**Decisions**:
+- Created reusable loadModel() utility rather than using loader directly
+- Auto-add to scene in utility for convenience (can be overridden with onLoad)
+- Added TypeScript types for better IDE support
+- Console logging for visibility during development
+
+**Test Results**: ✅ All tests passing (27 tests total)
+
+**Time**: ~20 minutes
+
+**Next**: Phase 4.2 - Load First GLTF

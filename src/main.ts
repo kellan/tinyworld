@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 // Grab container
 const container = document.getElementById('app') ?? document.body
@@ -90,6 +91,37 @@ function applyLightingPreset(index: number) {
 
 // Apply initial preset
 applyLightingPreset(currentPresetIndex)
+
+// GLTF Loader utility
+const gltfLoader = new GLTFLoader()
+
+/**
+ * Load a GLTF model and add it to the scene
+ * @param url - Path to the GLTF/GLB file
+ * @param onLoad - Optional callback when model loads successfully
+ * @param onProgress - Optional callback for loading progress
+ * @param onError - Optional callback for loading errors
+ */
+function loadModel(
+  url: string,
+  onLoad?: (gltf: any) => void,
+  onProgress?: (event: ProgressEvent) => void,
+  onError?: (error: ErrorEvent) => void
+) {
+  gltfLoader.load(
+    url,
+    (gltf) => {
+      scene.add(gltf.scene)
+      console.log(`Model loaded: ${url}`)
+      if (onLoad) onLoad(gltf)
+    },
+    onProgress,
+    (error) => {
+      console.error(`Error loading model ${url}:`, error)
+      if (onError) onError(error)
+    }
+  )
+}
 
 // Ground plane
 const groundGeometry = new THREE.PlaneGeometry(10, 10)
