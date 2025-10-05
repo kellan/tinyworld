@@ -708,4 +708,39 @@
 
 **Time**: ~10 minutes
 
+**Next**: Add more animals, then Phase 4.3 - Model Management
+
+---
+
+### Added Frog Model
+
+**Goal**: Add second animated animal to scene
+
+**Actions Taken**:
+1. Converted Character_Frog.fbx to frog.glb using fbx2gltf --binary
+   - 212KB file with animation (345 frames)
+   - Same conversion warnings as bumblebee (acceptable)
+2. Loaded frog at position (1, 0, -1) on ground
+3. Applied shared Nature_Texture.png (same texture atlas as bumblebee)
+4. Set up animation system (reused existing mixer array)
+5. Discovered frog needed 150x scale (3x larger than bumblebee)
+   - Different animals have different native sizes
+   - Frog is even tinier than bumblebee in original model
+
+**Learnings**:
+- Each animal model has different scale requirements
+- Frog needed 150x vs bumblebee's 50x
+- Animation system works perfectly for multiple models
+- Shared texture atlas automatically shows correct colors per animal
+- Same code pattern works for all animals from this pack
+
+**Decisions**:
+- Position frog on ground (y=0) since frogs sit/hop
+- Scale 150x for good visibility
+- Reuse same material/texture setup as bumblebee
+
+**Test Results**: ✅ All tests passing (29 tests)
+
+**Time**: ~5 minutes
+
 **Next**: Phase 4.3 - Model Management

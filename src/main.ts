@@ -207,6 +207,37 @@ loadModel('/models/bumblebee.glb', (gltf) => {
   }
 })
 
+loadModel('/models/frog.glb', (gltf) => {
+  // Position frog on the ground (frogs sit!)
+  gltf.scene.position.set(1, 0, -1)
+  // Scale up 150x - frog is even tinier than bumblebee!
+  gltf.scene.scale.set(150, 150, 150)
+
+  // Apply the shared animal texture
+  const materialWithTexture = new THREE.MeshStandardMaterial({
+    map: animalTexture,
+    roughness: 0.8,
+    metalness: 0.1
+  })
+
+  gltf.scene.traverse((child) => {
+    if (child instanceof THREE.Mesh) {
+      child.material = materialWithTexture
+    }
+  })
+
+  // Set up animation
+  if (gltf.animations && gltf.animations.length > 0) {
+    const mixer = new THREE.AnimationMixer(gltf.scene)
+    mixers.push(mixer)
+
+    const action = mixer.clipAction(gltf.animations[0])
+    action.play()
+
+    console.log('Frog animation playing:', gltf.animations[0].name)
+  }
+})
+
 // Grid helper
 const gridHelper = new THREE.GridHelper(20, 20, 0x444444, 0x888888)
 gridHelper.position.y = 0.01 // Slightly above ground to prevent z-fighting
