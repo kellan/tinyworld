@@ -81,7 +81,8 @@ const keys = {
   up: false,
   down: false,
   zoomIn: false,
-  zoomOut: false
+  zoomOut: false,
+  recenter: false
 }
 
 // Keyboard event listeners
@@ -111,6 +112,9 @@ window.addEventListener('keydown', (e) => {
     case '=':
     case '+':
       keys.zoomIn = true
+      break
+    case 'r':
+      keys.recenter = true
       break
   }
 })
@@ -142,6 +146,9 @@ window.addEventListener('keyup', (e) => {
     case '+':
       keys.zoomIn = false
       break
+    case 'r':
+      keys.recenter = false
+      break
   }
 })
 
@@ -152,6 +159,7 @@ let currentFrustumSize = frustumSize
 const minZoom = 2
 const maxZoom = 20
 const zoomSpeed = 0.05
+const maxPanDistance = 50 // Maximum distance from origin
 
 // Trackpad/mouse wheel zoom
 window.addEventListener('wheel', (e) => {
@@ -194,9 +202,46 @@ function updateCameraControls() {
   }
 
   if (panDelta.lengthSq() > 0) {
-    camera.position.add(panDelta)
-    lookAtTarget.add(panDelta)
+    // Store camera offset before moving
+    const cameraOffset = camera.position.clone().sub(lookAtTarget)
+
+    // Try to move lookAt target
+    const newLookAt = lookAtTarget.clone().add(panDelta)
+
+    // Check if we hit the boundary
+    const hitBoundary = newLookAt.length() > maxPanDistance
+
+    if (hitBoundary) {
+      // Flash the background red briefly
+      scene.background = new THREE.Color(0x440000)
+      setTimeout(() => {
+        scene.background = new THREE.Color(0x222222)
+      }, 100)
+
+      // Clamp lookAt to max distance from origin
+      newLookAt.normalize().multiplyScalar(maxPanDistance)
+    }
+
+    lookAtTarget.copy(newLookAt)
+
+    // Update camera position to maintain offset
+    camera.position.copy(lookAtTarget).add(cameraOffset)
     camera.lookAt(lookAtTarget)
+  }
+
+  // Handle recenter
+  if (keys.recenter) {
+    // Store the current camera-to-lookAt offset (viewing angle)
+    const cameraOffset = camera.position.clone().sub(lookAtTarget)
+
+    // Reset lookAt to origin
+    lookAtTarget.set(0, 0, 0)
+
+    // Position camera to maintain the same offset (same viewing angle)
+    camera.position.copy(lookAtTarget).add(cameraOffset)
+    camera.lookAt(lookAtTarget)
+
+    keys.recenter = false // Only recenter once per press
   }
 
   // Handle zoom

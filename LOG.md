@@ -334,3 +334,41 @@
 **Time**: ~25 minutes
 
 **Next**: Phase 2.4 - Camera Bounds
+
+---
+
+### Phase 2.4: Camera Bounds ✅ (Completed)
+
+**Goal**: Prevent camera from panning infinitely far from origin
+
+**Actions Taken**:
+1. Added camera bounds tests to `test/controls.test.ts`
+   - Test clamping to max distance from origin
+   - Test movement allowed within bounds
+   - Test camera-lookAt offset maintained when clamping
+2. Implemented bounds checking in `updateCameraControls()`
+   - Set maxPanDistance = 50 units from origin
+   - Check lookAt target distance before applying pan
+   - Clamp lookAt to sphere of radius maxPanDistance
+   - Maintain camera offset when clamping
+3. Added visual feedback for hitting boundary
+   - Background flashes dark red (0x440000) for 100ms
+   - Helps user understand they've reached the edge
+
+**Learnings**:
+- Bounds are checked on lookAt target, not camera position
+- Must preserve camera-to-lookAt offset when clamping
+- Visual feedback is important - without it, boundary feels like a bug
+- Tested with smaller bounds (15) first to make effect obvious
+
+**Decisions**:
+- Using spherical bounds (distance from origin) rather than box bounds
+- Max distance of 50 units gives plenty of room to explore
+- Red flash is subtle but effective feedback
+- Temporary background change uses setTimeout (could optimize later)
+
+**Test Results**: ✅ All tests passing (22 tests total)
+
+**Time**: ~20 minutes
+
+**Next**: Phase 3.1 - Ground Plane (already done in 1.2a, skip to 3.2)

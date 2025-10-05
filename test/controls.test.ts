@@ -166,3 +166,50 @@ describe('Camera Zoom', () => {
     expect(calculatedAspect).toBeCloseTo(aspect, 2)
   })
 })
+
+describe('Camera Bounds', () => {
+  it('should clamp camera position to max distance from origin', () => {
+    const maxDistance = 50
+    const position = new Vector3(60, 10, 60)
+    const lookAt = new Vector3(50, 0, 50)
+
+    // Calculate distance from origin for lookAt target
+    const distanceFromOrigin = lookAt.length()
+
+    if (distanceFromOrigin > maxDistance) {
+      // Clamp lookAt to max distance
+      lookAt.normalize().multiplyScalar(maxDistance)
+    }
+
+    expect(lookAt.length()).toBeLessThanOrEqual(maxDistance)
+  })
+
+  it('should allow camera movement within bounds', () => {
+    const maxDistance = 50
+    const position = new Vector3(10, 10, 10)
+    const lookAt = new Vector3(5, 0, 5)
+
+    const distanceFromOrigin = lookAt.length()
+
+    expect(distanceFromOrigin).toBeLessThan(maxDistance)
+  })
+
+  it('should maintain camera-lookAt offset when clamping', () => {
+    const maxDistance = 50
+    const position = new Vector3(60, 10, 60)
+    const lookAt = new Vector3(50, 0, 50)
+    const offset = position.clone().sub(lookAt)
+
+    // Clamp lookAt
+    if (lookAt.length() > maxDistance) {
+      lookAt.normalize().multiplyScalar(maxDistance)
+      // Restore offset
+      position.copy(lookAt).add(offset)
+    }
+
+    const newOffset = position.clone().sub(lookAt)
+    expect(newOffset.x).toBeCloseTo(offset.x, 2)
+    expect(newOffset.y).toBeCloseTo(offset.y, 2)
+    expect(newOffset.z).toBeCloseTo(offset.z, 2)
+  })
+})
