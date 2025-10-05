@@ -451,3 +451,38 @@
 **Time**: ~15 minutes
 
 **Next**: Phase 3.4 - Basic Lighting (3.3 already done in 1.2a)
+
+---
+
+### Phase 3.4: Basic Lighting ✅ (Completed)
+
+**Goal**: Ensure proper lighting setup with directional and ambient lights
+
+**Actions Taken**:
+1. Added lighting tests to `test/scene.test.ts`
+   - Test DirectionalLight properties (position, intensity, color)
+   - Test AmbientLight properties (intensity, color)
+   - Test both lights exist in scene for proper shading
+2. Verified existing lighting setup from initial scaffold
+   - DirectionalLight at position (2, 4, 3) with intensity 1
+   - AmbientLight with intensity 0.3
+   - Both lights already properly configured
+
+**Learnings**:
+- The initial project scaffold already included proper lighting
+- DirectionalLight provides main illumination and creates shadows/depth
+- AmbientLight fills in shadows to prevent completely black areas
+- Both lights together create good contrast and depth perception
+- Testing confirmed lighting setup matches best practices
+
+**Decisions**:
+- Kept existing lighting configuration (no changes needed)
+- DirectionalLight from upper-right creates good isometric shading
+- Ambient intensity at 0.3 prevents overly dark shadows
+- White light (0xffffff) for both to preserve object colors
+
+**Test Results**: ✅ All tests passing (26 tests total)
+
+**Time**: ~15 minutes
+
+**Next**: Phase 4.1 - GLTFLoader Setup
