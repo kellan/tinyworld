@@ -82,7 +82,9 @@ const keys = {
   down: false,
   zoomIn: false,
   zoomOut: false,
-  recenter: false
+  recenter: false,
+  rotateLeft: false,
+  rotateRight: false
 }
 
 // Keyboard event listeners
@@ -116,11 +118,18 @@ window.addEventListener('keydown', (e) => {
     case 'r':
       keys.recenter = true
       break
+    case '[':
+      keys.rotateLeft = true
+      break
+    case ']':
+      keys.rotateRight = true
+      break
   }
 })
 
 window.addEventListener('keyup', (e) => {
-  switch(e.key.toLowerCase()) {
+  const key = e.key.toLowerCase()
+  switch(key) {
     case 'a':
     case 'arrowleft':
       keys.left = false
@@ -150,6 +159,14 @@ window.addEventListener('keyup', (e) => {
       keys.recenter = false
       break
   }
+
+  // Handle special keys that don't need toLowerCase
+  if (e.key === '[') {
+    keys.rotateLeft = false
+  }
+  if (e.key === ']') {
+    keys.rotateRight = false
+  }
 })
 
 // Camera pan and zoom variables
@@ -160,26 +177,97 @@ const minZoom = 2
 const maxZoom = 20
 const zoomSpeed = 0.05
 const maxPanDistance = 50 // Maximum distance from origin
+const rotateSpeed = 0.02 // Radians per frame
 
-// Trackpad/mouse wheel zoom
+// Trackpad/mouse wheel zoom and rotation
 window.addEventListener('wheel', (e) => {
   e.preventDefault()
 
-  // Zoom based on deltaY (works for both mouse wheel and trackpad)
-  const zoomDelta = e.deltaY > 0 ? (1 + zoomSpeed * 2) : (1 - zoomSpeed * 2)
-  currentFrustumSize *= zoomDelta
+  // Horizontal scroll = rotation
+  if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+    const rotationAmount = e.deltaX * 0.005
 
-  // Clamp to min/max
-  currentFrustumSize = Math.max(minZoom, Math.min(maxZoom, currentFrustumSize))
+    // Get camera offset from lookAt target
+    const offset = camera.position.clone().sub(lookAtTarget)
 
-  // Update camera frustum
-  const aspect = window.innerWidth / window.innerHeight
-  camera.left = -currentFrustumSize * aspect / 2
-  camera.right = currentFrustumSize * aspect / 2
-  camera.top = currentFrustumSize / 2
-  camera.bottom = -currentFrustumSize / 2
-  camera.updateProjectionMatrix()
+    // Rotate offset around Y axis
+    const cosAngle = Math.cos(rotationAmount)
+    const sinAngle = Math.sin(rotationAmount)
+    const newX = offset.x * cosAngle - offset.z * sinAngle
+    const newZ = offset.x * sinAngle + offset.z * cosAngle
+
+    offset.x = newX
+    offset.z = newZ
+
+    // Apply rotated offset
+    camera.position.copy(lookAtTarget).add(offset)
+    camera.lookAt(lookAtTarget)
+  } else {
+    // Vertical scroll = zoom
+    const zoomDelta = e.deltaY > 0 ? (1 + zoomSpeed * 2) : (1 - zoomSpeed * 2)
+    currentFrustumSize *= zoomDelta
+
+    // Clamp to min/max
+    currentFrustumSize = Math.max(minZoom, Math.min(maxZoom, currentFrustumSize))
+
+    // Update camera frustum
+    const aspect = window.innerWidth / window.innerHeight
+    camera.left = -currentFrustumSize * aspect / 2
+    camera.right = currentFrustumSize * aspect / 2
+    camera.top = currentFrustumSize / 2
+    camera.bottom = -currentFrustumSize / 2
+    camera.updateProjectionMatrix()
+  }
 }, { passive: false })
+
+// Two-finger drag rotation (trackpad)
+let isDragging = false
+let lastPointerX = 0
+
+window.addEventListener('pointerdown', (e) => {
+  // Shift+drag or middle mouse button for rotation
+  if (e.shiftKey || e.button === 1) {
+    isDragging = true
+    lastPointerX = e.clientX
+    e.preventDefault()
+  }
+})
+
+window.addEventListener('pointermove', (e) => {
+  if (isDragging) {
+    const deltaX = e.clientX - lastPointerX
+    lastPointerX = e.clientX
+
+    // Rotate based on horizontal movement
+    const rotationAmount = deltaX * 0.01
+
+    // Get camera offset from lookAt target
+    const offset = camera.position.clone().sub(lookAtTarget)
+
+    // Rotate offset around Y axis
+    const cosAngle = Math.cos(rotationAmount)
+    const sinAngle = Math.sin(rotationAmount)
+    const newX = offset.x * cosAngle - offset.z * sinAngle
+    const newZ = offset.x * sinAngle + offset.z * cosAngle
+
+    offset.x = newX
+    offset.z = newZ
+
+    // Apply rotated offset
+    camera.position.copy(lookAtTarget).add(offset)
+    camera.lookAt(lookAtTarget)
+
+    e.preventDefault()
+  }
+})
+
+window.addEventListener('pointerup', () => {
+  isDragging = false
+})
+
+window.addEventListener('pointercancel', () => {
+  isDragging = false
+})
 
 function updateCameraControls() {
   const panDelta = new THREE.Vector3()
@@ -226,6 +314,33 @@ function updateCameraControls() {
 
     // Update camera position to maintain offset
     camera.position.copy(lookAtTarget).add(cameraOffset)
+    camera.lookAt(lookAtTarget)
+  }
+
+  // Handle rotation
+  let rotationDelta = 0
+  if (keys.rotateLeft) {
+    rotationDelta += rotateSpeed
+  }
+  if (keys.rotateRight) {
+    rotationDelta -= rotateSpeed
+  }
+
+  if (rotationDelta !== 0) {
+    // Get camera offset from lookAt target
+    const offset = camera.position.clone().sub(lookAtTarget)
+
+    // Rotate offset around Y axis
+    const cosAngle = Math.cos(rotationDelta)
+    const sinAngle = Math.sin(rotationDelta)
+    const newX = offset.x * cosAngle - offset.z * sinAngle
+    const newZ = offset.x * sinAngle + offset.z * cosAngle
+
+    offset.x = newX
+    offset.z = newZ
+
+    // Apply rotated offset
+    camera.position.copy(lookAtTarget).add(offset)
     camera.lookAt(lookAtTarget)
   }
 

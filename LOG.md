@@ -372,3 +372,41 @@
 **Time**: ~20 minutes
 
 **Next**: Phase 3.1 - Ground Plane (already done in 1.2a, skip to 3.2)
+
+---
+
+### Camera Rotation (Bonus Feature) ✅ (Completed)
+
+**Goal**: Add ability to rotate camera around the world
+
+**Actions Taken**:
+1. Added bracket key rotation controls
+   - [ key rotates left (counter-clockwise)
+   - ] key rotates right (clockwise)
+   - Continuous rotation while key is held
+2. Implemented trackpad horizontal swipe rotation
+   - Two-finger horizontal swipe rotates camera
+   - Detects horizontal vs vertical scroll via deltaX/deltaY comparison
+   - Vertical swipe still zooms, horizontal swipe rotates
+3. Camera rotates around Y axis
+   - Maintains distance from lookAt target
+   - Smooth rotation using trigonometry (cos/sin)
+   - Works at any camera position
+
+**Learnings**:
+- Rotation is just moving camera position in a circle around lookAt target
+- Use 2D rotation matrix: newX = x*cos - z*sin, newZ = x*sin + z*cos
+- wheel event provides both deltaX (horizontal) and deltaY (vertical)
+- Can distinguish between horizontal and vertical trackpad gestures
+
+**Decisions**:
+- Chose bracket keys [ and ] (easy to reach, not used for other controls)
+- Rotation speed: 0.02 radians/frame for keyboard, 0.005 for trackpad
+- Removed Shift+drag approach in favor of natural horizontal scroll
+- Both methods share same rotation logic (DRY)
+
+**Test Results**: ✅ All tests passing (22 tests - no new tests needed)
+
+**Time**: ~15 minutes
+
+**Next**: Phase 3.2 - Grid Helper
