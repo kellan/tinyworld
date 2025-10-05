@@ -84,23 +84,37 @@
 ### Option 3: Command Line (fbx2gltf)
 **Best for**: Batch conversion, automation
 
-**Steps**:
+**Installation**:
 ```bash
-# Install converter
 npm install -g fbx2gltf
-
-# Convert single file
-cd "Animated_Low_Poly/Animated Low Poly Animals/Meshes"
-fbx2gltf Character_Frog.fbx -o ../../../public/models/frog.glb
-
-# Convert all animals at once
-for file in Character_*.fbx; do
-  name=$(basename "$file" .fbx | tr '[:upper:]' '[:lower:]')
-  fbx2gltf "$file" -o "../../../public/models/${name}.glb"
-done
 ```
 
-**Note**: May require additional setup on some systems
+**✅ CONFIRMED WORKING ON THIS MACHINE**:
+```bash
+cd "Animated_Low_Poly/Animated Low Poly Animals/Meshes"
+
+# Single file conversion (confirmed working)
+/opt/homebrew/lib/node_modules/fbx2gltf/bin/Darwin/FBX2glTF Character_BumbleBee.fbx
+
+# This creates Character_BumbleBee.gltf in the same directory
+# Move to public/models/ and optionally rename:
+mv Character_BumbleBee.gltf ../../../public/models/bumblebee.gltf
+```
+
+**Batch convert all animals**:
+```bash
+cd "Animated_Low_Poly/Animated Low Poly Animals/Meshes"
+
+for file in Character_*.fbx; do
+  echo "Converting $file..."
+  /opt/homebrew/lib/node_modules/fbx2gltf/bin/Darwin/FBX2glTF "$file"
+done
+
+# Then move all GLTF files to public/models/
+mv *.gltf ../../../public/models/
+```
+
+**Note**: The direct path to the binary (`/opt/homebrew/lib/node_modules/fbx2gltf/bin/Darwin/FBX2glTF`) works when the npm global command doesn't resolve properly.
 
 ---
 
