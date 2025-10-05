@@ -194,19 +194,49 @@ Building a whimsical isometric world-builder with Three.js and TypeScript, using
 
 ---
 
-## Phase 8: Polish & Optimization
+## Phase 8: NPR Painterly Effects (Stylized → Painterly Diorama)
 
-### 8.1 - Performance Monitoring (20 min)
+**Goal**: Apply non-photorealistic rendering to achieve "painterly diorama" aesthetic with soft AO, paper texture overlay, slight watercolor noise, and ink outlines
+
+### 8.1 - SSAO Pass (30 min)
+- **Red**: Test SSAO pass integration with composer
+- **Green**: Add SSAOPass to post-processing pipeline
+- Tune for soft, subtle ambient occlusion
+- **Success Criteria**: Visible depth in corners and contact points
+
+### 8.2 - Paper Texture Overlay (25 min)
+- **Red**: Test texture overlay shader
+- **Green**: Create subtle paper/canvas texture overlay
+- Apply as final post-processing pass
+- **Success Criteria**: Subtle grain visible, not distracting
+
+### 8.3 - Watercolor Noise (30 min)
+- **Red**: Test color variation shader
+- **Green**: Add noise-based color bleeding effect
+- Keep it subtle for organic feel
+- **Success Criteria**: Hand-painted appearance without being messy
+
+### 8.4 - NPR Integration Polish (20 min)
+- **Red**: Test all NPR effects work together
+- **Green**: Balance all effects for cohesive look
+- Add toggle to enable/disable NPR
+- **Success Criteria**: Achieves "painterly diorama" vibe
+
+---
+
+## Phase 9: Polish & Optimization
+
+### 9.1 - Performance Monitoring (20 min)
 - **Red**: Test FPS counter integration
 - **Green**: Add Stats.js or similar
 - **Success Criteria**: Can see render performance
 
-### 8.2 - Scene Organization (25 min)
+### 9.2 - Scene Organization (25 min)
 - **Red**: Test scene hierarchy with groups
 - **Green**: Organize objects into logical groups
 - **Success Criteria**: Clean scene structure
 
-### 8.3 - Asset Loading Manager (30 min)
+### 9.3 - Asset Loading Manager (30 min)
 - **Red**: Test LoadingManager tracks progress
 - **Green**: Implement loading screen/progress
 - **Success Criteria**: User feedback during load
@@ -222,9 +252,10 @@ Building a whimsical isometric world-builder with Three.js and TypeScript, using
 - **Phase 5**: 40 min
 - **Phase 6**: 75 min
 - **Phase 7**: 75 min
-- **Phase 8**: 75 min
+- **Phase 8**: 105 min (NPR effects)
+- **Phase 9**: 75 min
 
-**Total: ~10.5 hours** of focused development time
+**Total: ~12.25 hours** of focused development time
 
 ---
 
